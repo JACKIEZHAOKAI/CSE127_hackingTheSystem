@@ -1,0 +1,29 @@
+Description of sploit1 functionality: 
+
+For the target1, we found the vulnerability is the buffer overflow caused by the mistaken usage of strcpy in bar function. Therefore, our basic strategy is put the shellcode into the argument buffer and put the shellcode address into the the $ebp + 4 and let the bar function return to our malicious shellcode in the buffer. First, we created the buffer that way larger that the buf of the strcpy, then we injected the 45 bytes of the shellcode at the beginning of the buffer and follow by three bytes of nop for padding. After that we hardcode the address of the shellcode (buffer address) into the buffer until the end of the buffer. When the traget1 run, it would jump back to the shellcode and we will get the host permission.
+
+Description of sploit2 functionality:
+
+For target2, we found the vulnerability is the nstrcpy function copy one more byte than it should be. So, our basic strategy is change in the least significant byte of the $ebp to make it jump back to the buffer which contain our malicious shellcode. 
+First, we created a buffer that have one more byte than the buf in the nstrcpy, then we copy the 45 bytes of shellcode at the beginning of the buffer followed by nops before the address that we changed the $ebp last byte to. Second, we put the buffer address into the next four bytes of the buffer. Finally, we change the last byte of the buffer to the last byte we want it to return.
+
+Description of sploit3 functionality: 
+
+1	we put a negtive number into the first part of the buffer, which can be converted to 830 while it is multipled by 5  in computing the space required for allocation in foo(). so that it can get into the if(count<829){} statement and do memory copy.
+2	then we put NOP to do padding 
+3	followed by that, we put our shellcode and three NOP to do padding.
+4	finally, we overwrite all the rest lines with shellcode address so that it can overwrite the foo's ret addr with shellcode's address.
+
+Description of sploit4 functionality:
+
+1	filled in the first line 32bits==4 bytes with first 2 bytes jump and amount, and the rest 2 bytes with ox90 which is NOP. 
+2	since the tfree() will overwrite the next line 32 bits with ret, so the value we put here does not matter. But, since we want the least significant bit in this ret addr to be 1 so that we can get into the if (q != NULL && GET_FREEBIT(q)) {} statement while calling tfree(q) the second time in foo(), we put 0xffffffff here.
+3	then we immediately put the 45 bits shellcode as follow, and padding the rest with NOP.
+4	while reaching the q chunk that we want to free by calling tfree(q), we carefully set the 1st line 32 bits with buffer address, which is also where p->s.l points to, and we set the next 32 bits to be the address of ret addr so that in tfree(), it can change the ret addr to buffer address in the two statement: *(1+4) = *(p+4) and *(*(p+4)+0) = q.
+when tfree() returns, it jumpt to buffer addree and then jump to shellcode that we injected into the buffer, and we can gain control of the shell.
+
+References used:
+discussion slides:
+https://piazza.com/class_profile/get_resource/ju01497sva37k2/juornvdcza278i
+jump instruction:
+http://ref.x86asm.net/coder32.html
