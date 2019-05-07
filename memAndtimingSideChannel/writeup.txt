@@ -1,0 +1,13 @@
+Description of memhack functionality:
+For the memhack part, we fist loop over the maximum password length and for each possible password characters. Then, we copy the current guess password combination into the buffer before the page_start address. We call the function check_pass to check if the current guess password a correct password. According to the implementation of check_pass, it will check the correct password length number of chars. it would have segmentation fault when our guess buffer is the same as the first part of the correct password but shorter than the password. When the function has segmentation fault, we will jump out the loop to check if the current guess is the correct password. When the current guess is not correct, we will guess the next char until it finds the correct password.
+
+Description of timehack functionality:
+The overall idea is adding each char into the guessed password, call check_pass() and observe the timing side channel to see if the time is increased. We do also calculate the median time of time delay to increase the guessing accuracy. We assume the longest delay time infer the currect char is guessed correctly because the delay() func in check_pass() will be called one more time if current char is correct, otherwise time delay should stay the same.
+
+But the time delay while calling check_pass() can be varied due to the process context switch,which can mislead us to make a wrong guess for a char, so we need backtracking while detecting the delay time is not increasing proportionally. We use an array to keep track of the time delay after adding each guessed char and compared with the time delay for the previous one to detect if delay time is not increasing proportional.
+
+In case the backtrack is not working correctly, we add a while loop to run the guessing procedure again.
+
+references used: 
+how to use C qsort funciton
+https://www.tutorialspoint.com/c_standard_library/c_function_qsort.htm
