@@ -5,4 +5,6 @@ interesting small hacking projects including
   
   hacking the C program by analyzing the memory side channel and timing side channel to guess the password
   
-  SQL injection and so on
+  SQL injection 
+  
+  DOS ifram injection of web A to web B (using wireshark to debug, canon.py)
