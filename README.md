@@ -7,4 +7,4 @@ interesting small hacking projects including
   
   SQL injection 
   
-  DOS ifram injection of web A to web B (using wireshark to debug, canon.py)
+  DOS ifram injection of web A to web B (using wireshark to debug, write canon.py under /mininet/pox/pox/triton)
